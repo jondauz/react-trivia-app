@@ -1,0 +1,12 @@
+.gameBoard {
+  display: flex;
+
+  > div {
+    padding: 1rem;
+    flex: 0 0 20%;
+    
+    h3 {
+      text-align: center;
+    }
+  }
+}

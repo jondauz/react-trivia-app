@@ -1,4 +1,6 @@
 import React from 'react';
+import { CategoryColumnComponent } from '../../components';
+import './TriviaAppContainer.scss';
 
 class TriviaApp extends React.Component {
     constructor(props) {
@@ -6,10 +8,9 @@ class TriviaApp extends React.Component {
         this.state = {
           error: null,
           isLoaded: false,
-          questions: []
+          finalCategories: []
         };
-      }
-    
+    }
 
     componentDidMount() {
         let apiRoot = "https://opentdb.com",
@@ -30,16 +31,12 @@ class TriviaApp extends React.Component {
                         chosenCategories.push(categories[i]);
                     }
 
-                    console.log(chosenCategories);
                     return Promise.all(chosenCategories.map(category => fetch(`${apiRoot}/api.php?amount=${amountOfEasyQuestions}&category=${category.id}&difficulty=easy`).then(res => res.json())));
                 },
                 this.errorHandler
             )
             .then(
                 (result) => {
-                    console.log('EASY');
-                    console.log(result);
-
                     chosenCategories.forEach((category, index) => {
                         category.questions = [...result[index].results]
                     });
@@ -50,9 +47,6 @@ class TriviaApp extends React.Component {
             )
             .then(
                 (result) => {
-                    console.log('MEDIUM');
-                    console.log(result);
-
                     chosenCategories.forEach((category, index) => {
                         category.questions = [...category.questions, ...result[index].results]
                     });
@@ -63,16 +57,13 @@ class TriviaApp extends React.Component {
             )
             .then(
                 (result) => {
-                    console.log('HARD');
-                    console.log(result);
-
                     chosenCategories.forEach((category, index) => {
                         category.questions = [...category.questions, ...result[index].results]
                     });
 
                     this.setState({
                         isLoaded: true,
-                        questions: chosenCategories
+                        finalCategories: chosenCategories
                     });
                 }
             );
@@ -87,20 +78,18 @@ class TriviaApp extends React.Component {
     }
 
     render() {
-        const { error, isLoaded, questions } = this.state;
+        const { error, isLoaded, finalCategories } = this.state;
         if (error) {
             return <div>Error: {error.message}</div>;
         } else if (!isLoaded) {
             return <div>Loading...</div>;
         } else {
             return (
-                <ul>
-                    {questions.map(question => (
-                        <li key={question.id}>
-                        {question.name}
-                        </li>
+                <div className="gameBoard">
+                    {finalCategories.map(category => (
+                        <CategoryColumnComponent key={ category.id } category={ category } />
                     ))}
-                </ul>
+                </div>
             );
         }
     }

@@ -1,0 +1,1 @@
+export { default as TriviaAppContainer } from './TriviaAppContainer/TriviaAppContainer';

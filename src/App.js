@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.scss';
-import TriviaApp from './containers/TriviaApp';
+import { TriviaAppContainer } from './containers';
 
 function App() {
   return (
-    <TriviaApp />
+    <TriviaAppContainer />
   );
 }
 
