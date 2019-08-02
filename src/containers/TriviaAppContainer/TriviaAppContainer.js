@@ -1,21 +1,24 @@
 import React from 'react';
-import { CategoryColumnComponent, QuestionCardComponent } from '../../components';
+import { CategoryColumnComponent, QuestionCardComponent, AnswerFeedbackComponent, ScoreComponent } from '../../components';
 import './TriviaAppContainer.scss';
 
 class TriviaApp extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-          error: null,
-          isLoaded: false,
-          finalCategories: [],
-          currentQuestion: null,
-          questionValue: null,
-          currentScore: 0
+            error: null,
+            isLoaded: false,
+            finalCategories: [],
+            currentQuestion: null,
+            questionValue: null,
+            currentScore: 0,
+            showResultModal: false,
+            lastResult: null
         };
 
         this.handleQuestionSelection = this.handleQuestionSelection.bind(this);
         this.handleAnswerSelection = this.handleAnswerSelection.bind(this);
+        this.handleFeedbackModalClose = this.handleFeedbackModalClose.bind(this);
     }
 
     componentDidMount() {
@@ -25,7 +28,7 @@ class TriviaApp extends React.Component {
             amountOfEasyQuestions = 2,
             amountOfMediumQuestions = 2,
             amountOfHardQuestions = 1;
-            
+
         fetch(`${apiRoot}/api_category.php`)
             .then(res => res.json())
             .then(
@@ -33,7 +36,7 @@ class TriviaApp extends React.Component {
                     let categories = result.trivia_categories;
                     categories.sort(() => Math.random() - 0.5);
 
-                    for(let i = 1; i <= numOfCategories; i++) {
+                    for (let i = 1; i <= numOfCategories; i++) {
                         chosenCategories.push(categories[i]);
                     }
 
@@ -69,10 +72,21 @@ class TriviaApp extends React.Component {
 
                     this.setState({
                         isLoaded: true,
-                        finalCategories: chosenCategories
+                        finalCategories: this.addQuestionProps(chosenCategories)
                     });
                 }
             );
+    }
+
+    addQuestionProps(categories) {
+        return categories.map(category => ({
+            ...category,
+            questions: category.questions.map((question, index) => ({
+                ...question,
+                value: (index + 1) * 200,
+                disabled: false
+            }))
+        }));
     }
 
     errorHandler(error) {
@@ -82,23 +96,34 @@ class TriviaApp extends React.Component {
         });
     }
 
-    handleQuestionSelection(question, questionValue) {
-      this.setState({
-        currentQuestion: question,
-        questionValue
-      });
+    handleQuestionSelection(question) {
+        question.disabled = true;
+        this.setState({
+            currentQuestion: question
+        });
     }
 
-    handleAnswerSelection(isCorrect) {
-      this.setState({
-        currentQuestion: null,
-        questionValue: null,
-        currentScore: isCorrect ? this.state.currentScore + this.state.questionValue : this.state.currentScore - this.state.questionValue
-      });
+    handleAnswerSelection(answer) {
+        let isCorrect = (this.state.currentQuestion.correct_answer === answer);
+        this.setState({
+            showResultModal: true,
+            lastResult: { 
+                isCorrect, 
+                correctAnswer: this.state.currentQuestion.correct_answer,
+                prevScore: this.state.currentScore,
+                scoreChange: isCorrect ? this.state.currentQuestion.value : -(this.state.currentQuestion.value)
+            },
+            currentQuestion: null,
+            currentScore: isCorrect ? this.state.currentScore + this.state.currentQuestion.value : this.state.currentScore - this.state.currentQuestion.value
+        });
     }
 
+    handleFeedbackModalClose() {
+        this.setState({ showResultModal: false });
+    }
+ 
     render() {
-        const { error, isLoaded, finalCategories, currentQuestion, currentScore } = this.state;
+        const { error, isLoaded, finalCategories, currentQuestion, currentScore, lastResult, showResultModal } = this.state;
         if (error) {
             return <div>Error: {error.message}</div>;
         } else if (!isLoaded) {
@@ -106,16 +131,17 @@ class TriviaApp extends React.Component {
         } else if (currentQuestion) {
             return <QuestionCardComponent onAnswerSelection={ this.handleAnswerSelection } question={ currentQuestion } />;
         }
-         else {
+        else {
             return (
-              <div>
-                { currentScore }
-                <div className="gameBoard">
-                    {finalCategories.map(category => (
-                        <CategoryColumnComponent onQuestionSelection={ this.handleQuestionSelection } key={ category.id } category={ category } />
-                    ))}
+                <div>
+                    <ScoreComponent score={ currentScore } /> 
+                    <div className="gameBoard">
+                        {finalCategories.map(category => (
+                            <CategoryColumnComponent onQuestionSelection={this.handleQuestionSelection} key={category.id} category={category} />
+                        ))}
+                    </div>
+                    { showResultModal && <AnswerFeedbackComponent onClose={ this.handleFeedbackModalClose } result={ lastResult } score={ currentScore } /> }
                 </div>
-              </div>
             );
         }
     }

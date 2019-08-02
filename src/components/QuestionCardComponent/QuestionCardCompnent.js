@@ -1,7 +1,7 @@
 import React from 'react';
+import './QuestionCardComponent.scss';
 
 class QuestionCardComponent extends React.Component {
-
     constructor(props) {
       super(props);
       this.handleSelection = this.handleSelection.bind(this);
@@ -13,19 +13,12 @@ class QuestionCardComponent extends React.Component {
       return textElem.value;
     }
 
-    handleSelection(selection) {
-      const { correct_answer} = this.props.question;
-      let isCorrect = false;
-
-      if(selection === correct_answer) {
-        isCorrect = true;
-      }
-
-      this.props.onAnswerSelection(isCorrect);
+    handleSelection(answer) {
+      this.props.onAnswerSelection(answer);
     }
 
     render() {
-        const { question, type, correct_answer, incorrect_answers } = this.props.question;
+        const { category, question, type, correct_answer, incorrect_answers } = this.props.question;
         let selections = [correct_answer, ...incorrect_answers].sort(() => Math.random() - 0.5)
 
         if (type !== 'multiple') {
@@ -33,17 +26,16 @@ class QuestionCardComponent extends React.Component {
         }
 
         return (
-          <div>
-            <p>{ this.decodeText(question) }</p>
-            <ul>
-              {selections.map((selection, index) => (
-                <li key={ index }>
-                  <button onClick={ () => this.handleSelection(selection) }>
+          <div className="question__container">
+            <div className="question__content">
+              <h3>{ category }</h3>
+              <p>{ this.decodeText(question) }</p>
+                {selections.map((selection, index) => (
+                  <button key={ index } onClick={ () => this.handleSelection(selection) }>
                     { this.decodeText(selection) }
                   </button>
-                </li>
-              ))}
-            </ul>
+                ))}
+            </div>
           </div>
         )
     }

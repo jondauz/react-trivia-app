@@ -7,12 +7,8 @@ class CategoryColumnComponent extends React.Component {
         this.handleClick = this.handleClick.bind(this);
     }
 
-    getPointAmount(questionIndex) {
-        return (questionIndex + 1) * 200;
-    }
-
-    handleClick (question, questionValue) {
-        this.props.onQuestionSelection(question, questionValue);
+    handleClick (question) {
+        this.props.onQuestionSelection(question);
     }
 
     render() {
@@ -22,8 +18,8 @@ class CategoryColumnComponent extends React.Component {
             <div>
                 <h3>{ name }</h3>
                 {questions.map((question, index) => (
-                    <button onClick={ ()=> this.handleClick(question, this.getPointAmount(index)) } key={ `${this.props.category.id}-${index}`}>
-                        ${ this.getPointAmount(index) }
+                    <button type="button" disabled={ question.disabled } onClick={ () => this.handleClick(question) } key={ index }>
+                        ${ question.value }
                     </button>
                 ))}
             </div>
