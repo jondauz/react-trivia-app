@@ -1,5 +1,5 @@
 import React from 'react';
-import { CategoryColumnComponent } from '../../components';
+import { CategoryColumnComponent, QuestionCardComponent } from '../../components';
 import './TriviaAppContainer.scss';
 
 class TriviaApp extends React.Component {
@@ -8,8 +8,14 @@ class TriviaApp extends React.Component {
         this.state = {
           error: null,
           isLoaded: false,
-          finalCategories: []
+          finalCategories: [],
+          currentQuestion: null,
+          questionValue: null,
+          currentScore: 0
         };
+
+        this.handleQuestionSelection = this.handleQuestionSelection.bind(this);
+        this.handleAnswerSelection = this.handleAnswerSelection.bind(this);
     }
 
     componentDidMount() {
@@ -67,7 +73,6 @@ class TriviaApp extends React.Component {
                     });
                 }
             );
-            
     }
 
     errorHandler(error) {
@@ -77,19 +82,40 @@ class TriviaApp extends React.Component {
         });
     }
 
+    handleQuestionSelection(question, questionValue) {
+      this.setState({
+        currentQuestion: question,
+        questionValue
+      });
+    }
+
+    handleAnswerSelection(isCorrect) {
+      this.setState({
+        currentQuestion: null,
+        questionValue: null,
+        currentScore: isCorrect ? this.state.currentScore + this.state.questionValue : this.state.currentScore - this.state.questionValue
+      });
+    }
+
     render() {
-        const { error, isLoaded, finalCategories } = this.state;
+        const { error, isLoaded, finalCategories, currentQuestion, currentScore } = this.state;
         if (error) {
             return <div>Error: {error.message}</div>;
         } else if (!isLoaded) {
             return <div>Loading...</div>;
-        } else {
+        } else if (currentQuestion) {
+            return <QuestionCardComponent onAnswerSelection={ this.handleAnswerSelection } question={ currentQuestion } />;
+        }
+         else {
             return (
+              <div>
+                { currentScore }
                 <div className="gameBoard">
                     {finalCategories.map(category => (
-                        <CategoryColumnComponent key={ category.id } category={ category } />
+                        <CategoryColumnComponent onQuestionSelection={ this.handleQuestionSelection } key={ category.id } category={ category } />
                     ))}
                 </div>
+              </div>
             );
         }
     }

@@ -1,10 +1,18 @@
 import React from 'react';
-import { QuestionCardComponent} from '../../components';
+// import { QuestionCardComponent} from '../../components';
 
 class CategoryColumnComponent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleClick = this.handleClick.bind(this);
+    }
 
     getPointAmount(questionIndex) {
         return (questionIndex + 1) * 200;
+    }
+
+    handleClick (question, questionValue) {
+        this.props.onQuestionSelection(question, questionValue);
     }
 
     render() {
@@ -14,7 +22,9 @@ class CategoryColumnComponent extends React.Component {
             <div>
                 <h3>{ name }</h3>
                 {questions.map((question, index) => (
-                    <QuestionCardComponent key={ `${this.props.category.id}-${index}`} question={ question } value={ this.getPointAmount(index) } />
+                    <button onClick={ ()=> this.handleClick(question, this.getPointAmount(index)) } key={ `${this.props.category.id}-${index}`}>
+                        ${ this.getPointAmount(index) }
+                    </button>
                 ))}
             </div>
         )
