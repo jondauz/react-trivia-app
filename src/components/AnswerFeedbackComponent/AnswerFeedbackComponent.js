@@ -23,9 +23,9 @@ class AnswerFeedbackComponent extends React.Component {
             <div className="feedback__container" onClick={ this.handleCloseSelf }>
                 <div className="feedback__content">
                     <p>{ isCorrect ? "Correct!" : "Wrong!" } The answer is { this.decodeText(correctAnswer) }</p>
-                    <p>{ prevScore }</p>
                     <p>{ scoreChange }</p>
-                    <p>{ this.props.score }</p>
+                    <p>Previous Score: { prevScore }</p>
+                    <p>New Score: { this.props.score }</p>
                 </div>
             </div>
         )
