@@ -129,18 +129,23 @@ class TriviaApp extends React.Component {
         } else if (!isLoaded) {
             return <div>Loading...</div>;
         } else if (currentQuestion) {
-            return <QuestionCardComponent onAnswerSelection={ this.handleAnswerSelection } question={ currentQuestion } />;
+            return (
+                <div>
+                    <QuestionCardComponent onAnswerSelection={ this.handleAnswerSelection } question={ currentQuestion } />;
+                    <ScoreComponent score={ currentScore } /> 
+                </div>
+            )
         }
         else {
             return (
                 <div>
-                    <ScoreComponent score={ currentScore } /> 
                     <div className="gameBoard">
                         {finalCategories.map(category => (
                             <CategoryColumnComponent onQuestionSelection={this.handleQuestionSelection} key={category.id} category={category} />
                         ))}
                     </div>
                     { showResultModal && <AnswerFeedbackComponent onClose={ this.handleFeedbackModalClose } result={ lastResult } score={ currentScore } /> }
+                    <ScoreComponent score={ currentScore } /> 
                 </div>
             );
         }

@@ -1,0 +1,18 @@
+.category__container {
+    display: flex;
+    flex-direction: column;
+}
+
+.category__title {
+    flex: 0 0 15vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category__selections {
+    button {
+        display: block;
+        margin: 2rem auto;
+    }
+}
