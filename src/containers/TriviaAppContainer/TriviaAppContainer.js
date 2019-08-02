@@ -25,9 +25,9 @@ class TriviaApp extends React.Component {
         let apiRoot = "https://opentdb.com",
             numOfCategories = 5,
             chosenCategories = [],
-            amountOfEasyQuestions = 2,
+            amountOfEasyQuestions = 1,
             amountOfMediumQuestions = 2,
-            amountOfHardQuestions = 1;
+            amountOfHardQuestions = 2;
 
         fetch(`${apiRoot}/api_category.php`)
             .then(res => res.json())
